@@ -1,6 +1,6 @@
-import { Connection, PublicKey, clusterApiUrl, ParsedAccountData, AccountInfo } from "@solana/web3.js";
+import { Connection, PublicKey, clusterApiUrl } from "@solana/web3.js";
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
-import { deserialize, deserializeUnchecked } from 'borsh';
+import { deserializeUnchecked } from 'borsh';
 import { Metadata, METADATA_SCHEMA } from './schema';
 import { extendBorsh } from './borsh';
 
@@ -9,7 +9,6 @@ extendBorsh();
 // use your wallet pubkey
 const pubKey: PublicKey = new PublicKey("4DQpzL1SCiutXjhCzGDCwcgShYxFKVxw13RZSvWKBqaa");
 
-// const METAPLEX_ID: PublicKey = new PublicKey('p1exdMJcjVao65QdewkaZRUnU6VPSXhus9n2GzWfh98');
 const METADATA_ID = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
 const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
