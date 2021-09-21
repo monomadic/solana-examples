@@ -1,18 +1,12 @@
 import { Connection, PublicKey, clusterApiUrl } from "@solana/web3.js";
 import { AccountLayout, TOKEN_PROGRAM_ID, u64 } from '@solana/spl-token';
 
-// wallet pk
+// use your wallet pubkey
 const pubKey = new PublicKey("4DQpzL1SCiutXjhCzGDCwcgShYxFKVxw13RZSvWKBqaa");
 
-// the Token program's Program Derived Address
-// const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
-
-(async () => {
-    // Connect to devnet cluster
-    const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-
-    // https://docs.solana.com/developing/clients/jsonrpc-api#getprogramaccounts
-    const accounts = await connection.getProgramAccounts(TOKEN_PROGRAM_ID, {
+// Returns SPL Token accounts associated with a wallet account.
+async function fetchSPLTokens(connection: Connection, pubKey: PublicKey) {
+    return connection.getParsedProgramAccounts(TOKEN_PROGRAM_ID, {
         commitment: connection.commitment,
         filters: [
             { dataSize: 165 }, // compares the program account data length with the provided data size
@@ -24,16 +18,21 @@ const pubKey = new PublicKey("4DQpzL1SCiutXjhCzGDCwcgShYxFKVxw13RZSvWKBqaa");
             },
         ]
     });
+}
 
-    console.log('Found %d spl-tokens.', accounts.length);
+async function main() {
+    const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
-    accounts.map((_account, _index) => {
-        const accountInfo = AccountLayout.decode(_account.account.data);
-        accountInfo.mint = new PublicKey(accountInfo.mint);
-        accountInfo.owner = new PublicKey(accountInfo.owner);
-        accountInfo.amount = u64.fromBuffer(accountInfo.amount);
+    const tokens = await fetchSPLTokens(connection, pubKey);
 
-        console.log(accountInfo);
+    tokens.forEach(token => {
+        console.log(token);
     });
+}
 
-  })();
+main()
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error(error);
+    process.exit(1);
+  });

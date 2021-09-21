@@ -4,13 +4,6 @@ const senderKeypair: Keypair = Keypair.generate();
 const receiverPubKey: PublicKey = Keypair.generate().publicKey;
 const amount: number = 0.1;
 
-function printLamports(lamports: number): string {
-  return (lamports / 1e9).toLocaleString("en", {
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2,
-  });
-}
-
 (async () => {
   // Connect to devnet cluster
   const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
