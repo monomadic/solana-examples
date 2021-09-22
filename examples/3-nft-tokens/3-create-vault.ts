@@ -1,14 +1,14 @@
-import { clusterApiUrl, Connection, sendAndConfirmTransaction, Transaction } from '@solana/web3.js';
+import { clusterApiUrl, Connection, Keypair, sendAndConfirmTransaction, Transaction } from '@solana/web3.js';
 
 import { createAirdroppedAccount } from '../shared/accounts';
 
 const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
 async function main() {
-  const creatorKeypair = await createAirdroppedAccount();
+  const creatorKeypair: Keypair = await createAirdroppedAccount();
 
   // create the transaction (instruction array)
-  const transaction = new Transaction().add(
+  const transaction: Transaction = new Transaction().add(
     // SystemProgram.transfer({
     //   fromPubkey: senderKeypair.publicKey,
     //   toPubkey: receiverPubKey,
