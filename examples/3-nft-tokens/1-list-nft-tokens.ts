@@ -69,7 +69,6 @@ export async function fetchMetadataAccounts(account: { mint: PublicKey }): Promi
 
 async function main() {
     const tokens = await fetchSPLTokens(connection, pubKey);
-    // console.log(tokens[0].account.data);
 
     const metadata = await Promise.all(
         tokens
