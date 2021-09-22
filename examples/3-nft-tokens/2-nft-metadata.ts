@@ -72,6 +72,7 @@ export async function fetchMetadataAccountsFromMint(mintPubKey: PublicKey): Prom
 			]
 		})
 		.then((accounts) => {
+            console.log("account length", accounts.length);
             return accounts[0];
 		});
 }
