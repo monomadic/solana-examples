@@ -1,8 +1,9 @@
-import { Connection, PublicKey, clusterApiUrl } from "@solana/web3.js";
 import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
+import { clusterApiUrl, Connection, PublicKey } from '@solana/web3.js';
 import { deserializeUnchecked } from 'borsh';
-import { Metadata, METADATA_SCHEMA } from './schema';
+
 import { extendBorsh } from './borsh';
+import { Metadata, METADATA_SCHEMA } from './schema';
 
 extendBorsh();
 
@@ -47,33 +48,33 @@ function filterMetadataAccounts(record: any): boolean {
 
 /// attempt to deserialise data buffer using borsh
 function deserialiseMetadata(buffer: Buffer): Metadata {
-	const metadata = deserializeUnchecked(METADATA_SCHEMA, Metadata, buffer) as Metadata;
+    const metadata = deserializeUnchecked(METADATA_SCHEMA, Metadata, buffer) as Metadata;
     const METADATA_REPLACE = new RegExp('\u0000', 'g');
 
-	metadata.data.name = metadata.data.name.replace(METADATA_REPLACE, '');
-	metadata.data.uri = metadata.data.uri.replace(METADATA_REPLACE, '');
-	metadata.data.symbol = metadata.data.symbol.replace(METADATA_REPLACE, '');
-	return metadata;
+    metadata.data.name = metadata.data.name.replace(METADATA_REPLACE, '');
+    metadata.data.uri = metadata.data.uri.replace(METADATA_REPLACE, '');
+    metadata.data.symbol = metadata.data.symbol.replace(METADATA_REPLACE, '');
+    return metadata;
 };
 
 /// return all accounts owned by the metadata program, with a given mint address.
 export async function fetchMetadataAccountsFromMint(mintPubKey: PublicKey): Promise<any> {
-	return connection
-		.getParsedProgramAccounts(METADATA_ID, {
-			filters: [
-				{
-					memcmp: {
-						offset:
-							1 + // key
-							32, // update auth
-						bytes: mintPubKey.toBase58()
-					}
-				}
-			]
-		})
-		.then((accounts) => {
+    return connection
+        .getParsedProgramAccounts(METADATA_ID, {
+            filters: [
+                {
+                    memcmp: {
+                        offset:
+                            1 + // key
+                            32, // update auth
+                        bytes: mintPubKey.toBase58()
+                    }
+                }
+            ]
+        })
+        .then((accounts) => {
             return accounts[0];
-		});
+        });
 }
 
 async function main() {
@@ -82,19 +83,19 @@ async function main() {
         tokens
             .map(mapMintPubkeys)
             .map(fetchMetadataAccountsFromMint)
-        ).then(result =>
-            result
-                .filter(filterMetadataAccounts)
-                .map(mapMetadataData)
-                .map(deserialiseMetadata)
-            );
+    ).then(result =>
+        result
+            .filter(filterMetadataAccounts)
+            .map(mapMetadataData)
+            .map(deserialiseMetadata)
+    );
 
     console.log(metadata);
 }
 
 main()
-  .then(() => process.exit(0))
-  .catch((error) => {
-    console.error(error);
-    process.exit(1);
-  });
+    .then(() => process.exit(0))
+    .catch((error) => {
+        console.error(error);
+        process.exit(1);
+    });
