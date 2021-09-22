@@ -1,5 +1,5 @@
-import { Connection, PublicKey, clusterApiUrl, ParsedAccountData, AccountInfo } from "@solana/web3.js";
-import { AccountLayout, TOKEN_PROGRAM_ID, u64 } from '@solana/spl-token';
+import { Connection, PublicKey, clusterApiUrl, ParsedAccountData } from "@solana/web3.js";
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
 // use your wallet pubkey
 const pubKey: PublicKey = new PublicKey("4DQpzL1SCiutXjhCzGDCwcgShYxFKVxw13RZSvWKBqaa");
@@ -7,8 +7,9 @@ const pubKey: PublicKey = new PublicKey("4DQpzL1SCiutXjhCzGDCwcgShYxFKVxw13RZSvW
 const METADATA_ID = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
 const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
 
-// Returns SPL Token accounts associated with a wallet account.
-// Metaplex NFTs are SPL Tokens, so we must request to fetch them first, and filter later.
+/**
+ * Returns SPL Token accounts associated with a wallet account.
+ * Metaplex NFTs are SPL Tokens, so we must request to fetch them first, and filter later. */
 async function fetchSPLTokens(connection: Connection, pubKey: PublicKey) {
     return connection.getParsedProgramAccounts(TOKEN_PROGRAM_ID, {
         commitment: connection.commitment,
@@ -24,19 +25,30 @@ async function fetchSPLTokens(connection: Connection, pubKey: PublicKey) {
     });
 }
 
-/// map only mint pubkey field (used to find associated metadata accounts)
-function mapMintPubkeys(record: { account: { data: any; }; }) {
+/** Map only mint pubkey field (used to find associated metadata accounts) */
+function mapMintAddress(record: { account: { data: any; }; }): PublicKey {
     return new PublicKey(record.account.data.parsed.info.mint);
 }
 
-/// filter only accounts that represent NFT metadata
-function filterMetadataAccounts(record: any): boolean {
-    // filter out undefined
-    return record;
+async function fetchAccountData(mintAddress: PublicKey): Promise<{mint: PublicKey, decimals: number, supply: number}> {
+    return connection.getParsedAccountInfo(mintAddress).then(account => {
+        const data = account.value?.data as ParsedAccountData;
+        return {
+            mint: mintAddress,
+            decimals: data.parsed.info.decimals,
+            supply: data.parsed.info.supply,
+        }
+    });
 }
 
-/// return all accounts owned by the metadata program, with a given mint address.
-export async function fetchMetadataAccountsFromMint(mintPubKey: PublicKey): Promise<any> {
+/** Filter only NFT Token accounts */
+function filterOnlyNFTs(account: {decimals: number, supply: number}): boolean {
+    // should have a mint with a supply of 1, decimals 0.
+    return (account.decimals == 0 && account.supply == 1);
+}
+
+/** Return all accounts owned by the metadata program, with a given mint address. */
+export async function fetchMetadataAccounts(account: { mint: PublicKey }): Promise<any> {
 	return connection
 		.getParsedProgramAccounts(METADATA_ID, {
 			filters: [
@@ -45,7 +57,7 @@ export async function fetchMetadataAccountsFromMint(mintPubKey: PublicKey): Prom
 						offset:
 							1 + // key
 							32, // update auth
-						bytes: mintPubKey.toBase58()
+						bytes: account.mint.toBase58()
 					}
 				}
 			]
@@ -57,14 +69,16 @@ export async function fetchMetadataAccountsFromMint(mintPubKey: PublicKey): Prom
 
 async function main() {
     const tokens = await fetchSPLTokens(connection, pubKey);
+    // console.log(tokens[0].account.data);
+
     const metadata = await Promise.all(
         tokens
-            .map(mapMintPubkeys)
-            .map(fetchMetadataAccountsFromMint)
-        ).then(result =>
-            result
-                .filter(filterMetadataAccounts)
-            );
+            .map(mapMintAddress)
+            .map(fetchAccountData)
+        ).then(mints => Promise.all(mints
+            .filter(filterOnlyNFTs)
+            .map(fetchMetadataAccounts)
+        ));
 
     console.log(metadata);
 }
