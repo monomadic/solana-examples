@@ -1,3 +1,4 @@
+import splToken = require('@solana/spl-token');
 import web3 = require('@solana/web3.js');
 import borsh = require('borsh');
 
@@ -6,6 +7,8 @@ import { programIds } from '../shared/common';
 import { InitVaultArgs, VAULT_SCHEMA } from '../shared/schema/vault';
 
 const connection = new web3.Connection(web3.clusterApiUrl('devnet'), 'confirmed');
+const tokenProgramId = new web3.PublicKey(programIds.token);
+const vaultProgramId = new web3.PublicKey(programIds.vault);
 
 function createVaultTransaction(
 	fractionalMint: web3.PublicKey,
@@ -19,8 +22,6 @@ function createVaultTransaction(
 		borsh.serialize(VAULT_SCHEMA, new InitVaultArgs({ allowFurtherShareCreation: false }))
 	);
 
-	const tokenProgramId = new web3.PublicKey(programIds.token);
-	const vaultProgramId = new web3.PublicKey(programIds.vault);
 	const sysvarRentPubkey = new web3.PublicKey('SysvarRent111111111111111111111111111111111');
 
 	const keys = [
@@ -73,6 +74,15 @@ async function main() {
 	console.log('Vault Authority:', vaultAuthority.toBase58());
 
 	const fractionalMint: web3.PublicKey = web3.Keypair.generate().publicKey;
+	await splToken.Token.createMint(
+		connection,
+		creatorKeypair, // payer
+		vaultAuthority, // mintAuthority
+		null, // freezeAuthority
+		0, // decimals
+		tokenProgramId
+	);
+
 	const redeemTreasury: web3.PublicKey = web3.Keypair.generate().publicKey;
 	const fractionalTreasury: web3.PublicKey = web3.Keypair.generate().publicKey;
 	const pricingLookupAddress: web3.PublicKey = web3.Keypair.generate().publicKey;
