@@ -14,14 +14,9 @@ export const programIds = {
 	metaplex: 'p1exdMJcjVao65QdewkaZRUnU6VPSXhus9n2GzWfh98',
 };
 
-export const findProgramAddress = async (
-	seeds: (Buffer | Uint8Array)[],
-	programId: PublicKey
-) => {
+export const findProgramAddress = async (seeds: (Buffer | Uint8Array)[], programId: PublicKey) => {
 	const key =
-		'pda-' +
-		seeds.reduce((agg, item) => agg + item.toString('hex'), '') +
-		programId.toString();
+		'pda-' + seeds.reduce((agg, item) => agg + item.toString('hex'), '') + programId.toString();
 	const cached = localStorage.getItem(key);
 	if (cached) {
 		const value = JSON.parse(cached);
