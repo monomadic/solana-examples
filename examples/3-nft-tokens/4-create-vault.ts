@@ -47,14 +47,16 @@ function createVaultTransaction(
 async function createMint(
 	signer: web3.Signer,
 	payer: web3.PublicKey,
+	vaultAuthority: web3.PublicKey,
 	freezeAuthority: web3.PublicKey | null
 ): Promise<web3.Keypair> {
 	const account: web3.Keypair = web3.Keypair.generate();
 	let transaction: web3.Transaction = new web3.Transaction();
 
-	const mintRentExempt = await connection.getMinimumBalanceForRentExemption(
-		splToken.MintLayout.span
-	);
+	// const mintRentExempt = await connection.getMinimumBalanceForRentExemption(
+	// 	splToken.MintLayout.span
+	// );
+	const mintRentExempt = 10;
 
 	transaction.add(
 		web3.SystemProgram.createAccount({
@@ -71,15 +73,18 @@ async function createMint(
 	// 		splToken.TOKEN_PROGRAM_ID,
 	// 		account.publicKey, // mint
 	// 		0, // decimals
-	// 		signer.publicKey, // owner
+	// 		vaultAuthority, // owner
 	// 		freezeAuthority
 	// 	)
 	// );
 
 	console.log('Creating mint...');
-	await web3.sendAndConfirmTransaction(connection, transaction, [signer]).then(() => {
-		console.log('Mint:', account.publicKey.toBase58());
-	});
+
+	await web3.sendAndConfirmTransaction(connection, transaction, [signer])
+		.catch(err => console.log(err))
+		.then(() => {
+			console.log('Mint:', account.publicKey.toBase58());
+		});
 
 	return account;
 }
@@ -114,46 +119,48 @@ async function main() {
 	);
 	console.log('Vault Authority:', vaultAuthority.toBase58());
 
-	let fractionalMint: web3.Keypair = await createMint(
+	// let fractionalMint: web3.Keypair = await createMint(
+	// 	creatorKeypair,
+	// 	creatorKeypair.publicKey,
+	// 	vaultAuthority,
+	// 	null
+	// );
+
+	const fractionalMint = await splToken.Token.createMint(
+		connection,
 		creatorKeypair,
 		creatorKeypair.publicKey,
-		null
+		null,
+		9,
+		splToken.TOKEN_PROGRAM_ID
 	);
 	console.log('Fractional Mint:', fractionalMint.publicKey.toBase58());
-	signers.push(fractionalMint);
+	// signers.push(fractionalMint.ac);
 
-	// minter for fraction tokens
-	// const fractionalMint: web3.PublicKey = web3.Keypair.generate().publicKey;
-	// await splToken.Token.createMint(
-	// 	connection,
-	// 	creatorKeypair, // payer
-	// 	vaultAuthority, // mintAuthority
-	// 	null, // freezeAuthority
-	// 	0, // decimals
-	// 	tokenProgramId
-	// );
+
+
 
 	const redeemTreasury: web3.PublicKey = web3.Keypair.generate().publicKey;
 	const fractionalTreasury: web3.PublicKey = web3.Keypair.generate().publicKey;
 	const pricingLookupAddress: web3.PublicKey = web3.Keypair.generate().publicKey;
 
-	const transaction: web3.Transaction = createVaultTransaction(
-		fractionalMint.publicKey,
-		redeemTreasury,
-		fractionalTreasury,
-		vault.publicKey,
-		vaultAuthority,
-		pricingLookupAddress
-	);
+	// const transaction: web3.Transaction = createVaultTransaction(
+	// 	fractionalMint.publicKey,
+	// 	redeemTreasury,
+	// 	fractionalTreasury,
+	// 	vault.publicKey,
+	// 	vaultAuthority,
+	// 	pricingLookupAddress
+	// );
 
-	// sign transaction, broadcast, and confirm
-	const signature: string = await web3.sendAndConfirmTransaction(
-		connection,
-		transaction,
-		signers
-	);
+	// // sign transaction, broadcast, and confirm
+	// const signature: string = await web3.sendAndConfirmTransaction(
+	// 	connection,
+	// 	transaction,
+	// 	signers
+	// );
 
-	console.log('tx signature:', signature);
+	// console.log('tx signature:', signature);
 }
 
 main()

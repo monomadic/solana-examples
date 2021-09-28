@@ -14,6 +14,14 @@ const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
 async function fetchAllVaults() {
 	return connection.getParsedProgramAccounts(VAULT_ID, {
 		commitment: connection.commitment,
+		filters: [
+			{
+				memcmp: {
+					offset: 0, // we want key which is at 0
+					bytes: "4", // VaultV1 (0x03)
+				},
+			},
+		],
 	});
 }
 
@@ -25,6 +33,7 @@ function printVaults(
 ) {
 	const buffer: Buffer = vaults[0].account.data as Buffer;
 	console.log(vaults[0].pubkey.toBase58());
+	
 	const vault: Vault = deserializeUnchecked(VAULT_SCHEMA, Vault, buffer);
 	console.log(vault);
 }
