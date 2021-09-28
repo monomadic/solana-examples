@@ -126,41 +126,44 @@ async function main() {
 	// 	null
 	// );
 
-	const fractionalMint = await splToken.Token.createMint(
+	const fractionalMint: splToken.Token = await splToken.Token.createMint(
 		connection,
-		creatorKeypair,
-		creatorKeypair.publicKey,
-		null,
-		9,
-		splToken.TOKEN_PROGRAM_ID
+		creatorKeypair, // payer
+		creatorKeypair.publicKey, // mintAuthority
+		null, // freezeAuthority
+		0, // decimals
+		splToken.TOKEN_PROGRAM_ID // the program to call when minting new tokens
 	);
+	// await fractionalMint.setAuthority(fractionalMint.publicKey, null, 'MintTokens', creatorKeypair.publicKey, []);
+	signers.push(fractionalMint.payer);
+	await fractionalMint.getOrCreateAssociatedAccountInfo(creatorKeypair.publicKey);
 	console.log('Fractional Mint:', fractionalMint.publicKey.toBase58());
-	// signers.push(fractionalMint.ac);
-
-
-
 
 	const redeemTreasury: web3.PublicKey = web3.Keypair.generate().publicKey;
+
+
+	
+
 	const fractionalTreasury: web3.PublicKey = web3.Keypair.generate().publicKey;
 	const pricingLookupAddress: web3.PublicKey = web3.Keypair.generate().publicKey;
 
-	// const transaction: web3.Transaction = createVaultTransaction(
-	// 	fractionalMint.publicKey,
-	// 	redeemTreasury,
-	// 	fractionalTreasury,
-	// 	vault.publicKey,
-	// 	vaultAuthority,
-	// 	pricingLookupAddress
-	// );
+	const transaction: web3.Transaction = createVaultTransaction(
+		fractionalMint.publicKey,
+		redeemTreasury,
+		fractionalTreasury,
+		vault.publicKey,
+		vaultAuthority,
+		pricingLookupAddress
+	);
 
-	// // sign transaction, broadcast, and confirm
-	// const signature: string = await web3.sendAndConfirmTransaction(
-	// 	connection,
-	// 	transaction,
-	// 	signers
-	// );
+	// sign transaction, broadcast, and confirm
+	const signature: string = await web3.sendAndConfirmTransaction(
+		connection,
+		transaction,
+		signers
+	);
 
-	// console.log('tx signature:', signature);
+	console.log('tx signature:', signature);
 }
 
 main()

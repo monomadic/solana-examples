@@ -1,5 +1,5 @@
 import { Connection, PublicKey, clusterApiUrl } from "@solana/web3.js";
-import { AccountLayout, TOKEN_PROGRAM_ID, u64 } from '@solana/spl-token';
+import { TOKEN_PROGRAM_ID } from '@solana/spl-token';
 
 // use your wallet pubkey
 const pubKey = new PublicKey("4DQpzL1SCiutXjhCzGDCwcgShYxFKVxw13RZSvWKBqaa");
@@ -22,7 +22,6 @@ async function fetchSPLTokens(connection: Connection, pubKey: PublicKey) {
 
 async function main() {
     const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-
     const tokens = await fetchSPLTokens(connection, pubKey);
 
     tokens.forEach(token => {
