@@ -2,7 +2,7 @@ import { AccountLayout, MintLayout } from '@solana/spl-token';
 import { Connection, Keypair, PublicKey, SystemProgram, TransactionInstruction } from '@solana/web3.js';
 
 import { createMint, createTokenAccount } from './account';
-import { findProgramAddress, programIds, StringPublicKey, toPublicKey } from './common';
+import { findProgramAddress, StringPublicKey, toPublicKey, VAULT_ID } from './common';
 import { initVault, MAX_VAULT_SIZE, VAULT_PREFIX } from './vault';
 
 // This command creates the external pricing oracle a vault
@@ -20,8 +20,6 @@ export async function createVault(
 	instructions: TransactionInstruction[];
 	signers: Keypair[];
 }> {
-	const PROGRAM_IDS = programIds;
-
 	const signers: Keypair[] = [];
 	const instructions: TransactionInstruction[] = [];
 
@@ -39,10 +37,10 @@ export async function createVault(
 		await findProgramAddress(
 			[
 				Buffer.from(VAULT_PREFIX),
-				toPublicKey(PROGRAM_IDS.vault).toBuffer(),
+				new PublicKey(VAULT_ID).toBuffer(),
 				vault.publicKey.toBuffer(),
 			],
-			toPublicKey(PROGRAM_IDS.vault)
+			new PublicKey(VAULT_ID)
 		)
 	)[0];
 
@@ -79,7 +77,7 @@ export async function createVault(
 		newAccountPubkey: vault.publicKey,
 		lamports: vaultRentExempt,
 		space: MAX_VAULT_SIZE,
-		programId: toPublicKey(PROGRAM_IDS.vault),
+		programId: new PublicKey(VAULT_ID),
 	});
 	instructions.push(uninitializedVault);
 	signers.push(vault);

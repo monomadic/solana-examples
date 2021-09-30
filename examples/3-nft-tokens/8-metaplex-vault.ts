@@ -3,6 +3,9 @@
 import web3 = require('@solana/web3.js');
 
 import * as metaplex from '../shared/metaplex';
+import { extendBorsh } from './borsh';
+
+extendBorsh();
 
 const key: Uint8Array = Uint8Array.from([
 	177, 170, 34, 243, 4, 208, 205, 245, 36, 40, 226, 7, 236, 15, 211, 57, 67, 24, 108, 214, 242,
@@ -27,12 +30,22 @@ async function main() {
 	console.log(payer.publicKey.toBase58());
 	console.log(await connection.getBalance(payer.publicKey));
 
-	const { priceMint, externalPriceAccount, instructions, signers } =
-		await metaplex.createExternalPriceAccount(connection, payer.publicKey);
+	{
+		const { priceMint, externalPriceAccount, instructions, signers } =
+			await metaplex.createExternalPriceAccount(connection, payer.publicKey);
+		await doTransaction(instructions, [payer, ...signers]);
 
-	await doTransaction(instructions, signers);
-
-	metaplex.createVault(connection, payer.publicKey, priceMint, externalPriceAccount);
+		{
+			const { vault, instructions, signers } = await metaplex.createVault(
+				connection,
+				payer.publicKey,
+				priceMint,
+				externalPriceAccount
+			);
+			await doTransaction(instructions, [payer, ...signers]);
+			console.log('Vault:', vault);
+		}
+	}
 }
 
 main()

@@ -1,3 +1,4 @@
+import splToken = require('@solana/spl-token');
 import { AccountMeta, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY, TransactionInstruction } from '@solana/web3.js';
 import BN from 'bn.js';
 import { deserializeUnchecked, serialize } from 'borsh';
@@ -350,7 +351,7 @@ export async function initVault(
 			isWritable: false,
 		},
 		{
-			pubkey: new PublicKey(programIds.token),
+			pubkey: new PublicKey(splToken.TOKEN_PROGRAM_ID),
 			isSigner: false,
 			isWritable: false,
 		},
