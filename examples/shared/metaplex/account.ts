@@ -1,7 +1,9 @@
 import { AccountInfo as TokenAccountInfo, AccountLayout, MintLayout, Token, u64 } from '@solana/spl-token';
 import { AccountInfo, Keypair, PublicKey, SystemProgram, SYSVAR_RENT_PUBKEY, TransactionInstruction } from '@solana/web3.js';
 
-import { SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID, TOKEN_PROGRAM_ID, WRAPPED_SOL_MINT } from './common';
+import { StringPublicKey } from '../common';
+import { SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID, TOKEN_PROGRAM_ID, WRAPPED_SOL_MINT } from '../metaplex';
+import { chunks } from './utils';
 
 // import { cache } from '../contexts/accounts';
 export interface TokenAccount {
@@ -9,6 +11,63 @@ export interface TokenAccount {
 	account: AccountInfo<Buffer>;
 	info: TokenAccountInfo;
 }
+
+export interface ParsedAccountBase {
+	pubkey: StringPublicKey;
+	account: AccountInfo<Buffer>;
+	info: any; // TODO: change to unknown
+}
+
+export type AccountParser = (
+	pubkey: StringPublicKey,
+	data: AccountInfo<Buffer>
+) => ParsedAccountBase | undefined;
+
+export interface ParsedAccount<T> extends ParsedAccountBase {
+	info: T;
+}
+
+export const getMultipleAccounts = async (connection: any, keys: string[], commitment: string) => {
+	const result = await Promise.all(
+		chunks(keys, 99).map((chunk) => getMultipleAccountsCore(connection, chunk, commitment))
+	);
+
+	const array = result
+		.map(
+			(a) =>
+				a.array.map((acc) => {
+					if (!acc) {
+						return undefined;
+					}
+
+					const { data, ...rest } = acc;
+					const obj = {
+						...rest,
+						data: Buffer.from(data[0], 'base64'),
+					} as AccountInfo<Buffer>;
+					return obj;
+				}) as AccountInfo<Buffer>[]
+		)
+		.flat();
+	return { keys, array };
+};
+
+const getMultipleAccountsCore = async (connection: any, keys: string[], commitment: string) => {
+	const args = connection._buildArgs([keys], commitment, 'base64');
+
+	const unsafeRes = await connection._rpcRequest('getMultipleAccounts', args);
+	if (unsafeRes.error) {
+		throw new Error('failed to get info about account ' + unsafeRes.error.message);
+	}
+
+	if (unsafeRes.result.value) {
+		const array = unsafeRes.result.value as AccountInfo<string[]>[];
+		return { keys, array };
+	}
+
+	// TODO: fix
+	throw new Error();
+};
 
 export const deserializeAccount = (data: Buffer) => {
 	const accountInfo = AccountLayout.decode(data);

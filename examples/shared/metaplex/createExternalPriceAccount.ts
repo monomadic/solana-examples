@@ -1,9 +1,14 @@
 import { Connection, Keypair, PublicKey, SystemProgram, TransactionInstruction } from '@solana/web3.js';
 import BN from 'bn.js';
 
-import { programIds, StringPublicKey } from '../common';
-import { ExternalPriceAccount, MAX_EXTERNAL_ACCOUNT_SIZE, updateExternalPriceAccount } from '../metaplex';
-import { WRAPPED_SOL_MINT } from './common';
+import {
+  ExternalPriceAccount,
+  MAX_EXTERNAL_ACCOUNT_SIZE,
+  programIds,
+  StringPublicKey,
+  updateExternalPriceAccount,
+  WRAPPED_SOL_MINT,
+} from '../metaplex';
 
 // This command creates the external pricing oracle
 export async function createExternalPriceAccount(

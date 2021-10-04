@@ -21,9 +21,10 @@ async function doTransaction(
 	signers: web3.Signer[]
 ): Promise<string> {
 	let transaction = new web3.Transaction().add(...instructions);
-
 	return web3.sendAndConfirmTransaction(connection, transaction, signers);
 }
+
+// async function createOracle()
 
 async function main() {
 	const payer = web3.Keypair.fromSecretKey(key);
@@ -31,11 +32,13 @@ async function main() {
 	console.log(await connection.getBalance(payer.publicKey));
 
 	{
+		// create an oracle for redemption price
 		const { priceMint, externalPriceAccount, instructions, signers } =
 			await metaplex.createExternalPriceAccount(connection, payer.publicKey);
 		await doTransaction(instructions, [payer, ...signers]);
 
 		{
+			// create the vault
 			const { vault, instructions, signers } = await metaplex.createVault(
 				connection,
 				payer.publicKey,

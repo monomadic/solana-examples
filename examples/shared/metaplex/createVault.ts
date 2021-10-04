@@ -1,9 +1,17 @@
 import { AccountLayout, MintLayout } from '@solana/spl-token';
 import { Connection, Keypair, PublicKey, SystemProgram, TransactionInstruction } from '@solana/web3.js';
 
-import { createMint, createTokenAccount } from './account';
-import { findProgramAddress, StringPublicKey, toPublicKey, VAULT_ID } from './common';
-import { initVault, MAX_VAULT_SIZE, VAULT_PREFIX } from './vault';
+import {
+  createMint,
+  createTokenAccount,
+  findProgramAddress,
+  initVault,
+  MAX_VAULT_SIZE,
+  StringPublicKey,
+  toPublicKey,
+  VAULT_ID,
+  VAULT_PREFIX,
+} from '../metaplex';
 
 // This command creates the external pricing oracle a vault
 // This gets the vault ready for adding the tokens.
