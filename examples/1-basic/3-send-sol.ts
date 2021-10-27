@@ -1,36 +1,40 @@
-import { Connection, PublicKey, clusterApiUrl, LAMPORTS_PER_SOL, Keypair, Transaction, SystemProgram, sendAndConfirmTransaction } from "@solana/web3.js";
+import { Keypair, LAMPORTS_PER_SOL, sendAndConfirmTransaction, SystemProgram, Transaction } from '@solana/web3.js';
+import * as web3 from '@solana/web3.js';
+import base58 from 'bs58';
+
+import config from '../shared/config';
 
 const senderKeypair: Keypair = Keypair.generate();
-const receiverPubKey: PublicKey = Keypair.generate().publicKey;
 const amount: number = 0.1;
 
 (async () => {
-  // Connect to devnet cluster
-  const connection = new Connection(clusterApiUrl("devnet"), "confirmed");
-  
-  // request airdrop, sign with signers PK
-  console.log("requesting airdrop...");
-  let airdropSignature = await connection.requestAirdrop(
-    senderKeypair.publicKey,
-    LAMPORTS_PER_SOL, // 10000000 Lamports in 1 SOL
-  );
-  await connection.confirmTransaction(airdropSignature);
+	// Connect to devnet cluster
+	const connection = new web3.Connection(config.cluster, 'confirmed');
 
-  // create the transaction (instruction array)
-  const transaction = new Transaction().add(
-    SystemProgram.transfer({
-      fromPubkey: senderKeypair.publicKey,
-      toPubkey: receiverPubKey,
-      lamports: (LAMPORTS_PER_SOL / 100) * amount,
-    }),
-  );
+	// Grab the account in our .env file
+	const keypair = web3.Keypair.fromSecretKey(base58.decode(config.keypair));
 
-  // sign transaction, broadcast, and confirm
-  const signature: string = await sendAndConfirmTransaction(
-    connection,
-    transaction,
-    [senderKeypair],
-  );
+	// Request airdrop, sign with signers PK
+	console.log('requesting airdrop...');
+	let airdropSignature = await connection.requestAirdrop(
+		senderKeypair.publicKey,
+		LAMPORTS_PER_SOL // 10000000 Lamports in 1 SOL
+	);
+	await connection.confirmTransaction(airdropSignature);
 
-  console.log('tx signature:', signature);
+	// Create the transaction (instruction array)
+	const transaction = new Transaction().add(
+		SystemProgram.transfer({
+			fromPubkey: senderKeypair.publicKey,
+			toPubkey: keypair.publicKey,
+			lamports: (LAMPORTS_PER_SOL / 100) * amount,
+		})
+	);
+
+	// Sign transaction, broadcast, and confirm
+	const signature: string = await sendAndConfirmTransaction(connection, transaction, [
+		senderKeypair,
+	]);
+
+	console.log('tx signature:', signature);
 })();

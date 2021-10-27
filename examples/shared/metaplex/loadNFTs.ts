@@ -55,7 +55,7 @@ export const getAllCollectibles = async (
 						)[0]
 				)
 			);
-			const accountInfos = await Promise.all(
+			const accountInfos: AccountAndPubkey[] = await Promise.all(
 				programAddresses.map(async (item) => {
 					const data: web3.AccountInfo<Buffer> = (await connection.getAccountInfo(
 						item
@@ -67,8 +67,9 @@ export const getAllCollectibles = async (
 							lamports: data.lamports,
 							// TODO: maybe we can do it in lazy way? or just use string
 							owner: data.owner,
-						},
-						pubkey: item,
+							rentEpoch: undefined,
+						} as web3.AccountInfo<Buffer>,
+						pubkey: item.toBase58(),
 					};
 				})
 			);

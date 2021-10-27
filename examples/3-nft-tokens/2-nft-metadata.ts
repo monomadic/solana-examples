@@ -8,7 +8,7 @@ import { Metadata, METADATA_SCHEMA } from './schema';
 extendBorsh();
 
 // use your wallet pubkey
-const pubKey: PublicKey = new PublicKey('4DQpzL1SCiutXjhCzGDCwcgShYxFKVxw13RZSvWKBqaa');
+const pubKey: PublicKey = new PublicKey('');
 
 const METADATA_ID = new PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
 const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
@@ -77,7 +77,9 @@ export async function fetchMetadataAccountsFromMint(mintPubKey: PublicKey): Prom
 
 async function main() {
 	const tokens = await fetchSPLTokens(connection, pubKey);
-	const metadata = await Promise.all(tokens.map(mapMintPubkeys).map(fetchMetadataAccountsFromMint)).then((result) =>
+	const metadata = await Promise.all(
+		tokens.map(mapMintPubkeys).map(fetchMetadataAccountsFromMint)
+	).then((result) =>
 		result.filter(filterMetadataAccounts).map(mapMetadataData).map(deserialiseMetadata)
 	);
 

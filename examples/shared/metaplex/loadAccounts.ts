@@ -1,16 +1,3 @@
-// import {
-//   getEdition,
-//   getMultipleAccounts,
-//   MAX_CREATOR_LEN,
-//   MAX_CREATOR_LIMIT,
-//   MAX_NAME_LENGTH,
-//   MAX_SYMBOL_LENGTH,
-//   MAX_URI_LENGTH,
-//   Metadata,
-//   METADATA_PREFIX,
-//   ParsedAccount,
-// } from '@oyster/common';
-// import { METADATA_PROGRAM_ID, METAPLEX_ID, StringPublicKey, toPublicKey } from '@oyster/common/dist/lib/utils/ids';
 import { AccountInfo, Connection, PublicKey } from '@solana/web3.js';
 
 import { StringPublicKey } from '../common';
