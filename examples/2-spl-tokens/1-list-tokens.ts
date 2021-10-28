@@ -4,8 +4,11 @@ import base58 from 'bs58';
 
 import config from '../shared/config';
 
-// Returns SPL Token accounts associated with a wallet account.
-async function fetchSPLTokens(connection: web3.Connection, pubKey: web3.PublicKey) {
+/** Returns SPL Token accounts associated with a wallet account. */
+export async function fetchSPLTokens(
+	connection: web3.Connection,
+	wallet: web3.PublicKey
+): Promise<Array<{}>> {
 	return connection.getParsedProgramAccounts(splToken.TOKEN_PROGRAM_ID, {
 		commitment: connection.commitment,
 		filters: [
@@ -14,7 +17,7 @@ async function fetchSPLTokens(connection: web3.Connection, pubKey: web3.PublicKe
 				memcmp: {
 					// filter memory comparison
 					offset: 32, // owner metadata is 32 bytes offset
-					bytes: pubKey.toBase58(),
+					bytes: wallet.toBase58(),
 				},
 			},
 		],
