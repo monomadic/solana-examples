@@ -8,10 +8,7 @@ const senderKeypair: Keypair = Keypair.generate();
 const amount: number = 0.1;
 
 (async () => {
-	// Connect to devnet cluster
 	const connection = new web3.Connection(config.cluster, 'confirmed');
-
-	// Grab the account in our .env file
 	const keypair = web3.Keypair.fromSecretKey(base58.decode(config.keypair));
 
 	// Request airdrop, sign with signers PK

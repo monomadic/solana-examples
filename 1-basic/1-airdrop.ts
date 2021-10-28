@@ -1,7 +1,10 @@
-import { clusterApiUrl, Connection, Keypair, LAMPORTS_PER_SOL } from '@solana/web3.js';
+import * as web3 from '@solana/web3.js';
 import base58 from 'bs58';
 
-function printLamports(lamports: number): string {
+// create a connection on devnet (this time we won't load .env), but in future we will.
+const connection = new web3.Connection(web3.clusterApiUrl('devnet'), 'confirmed');
+
+export function printLamports(lamports: number): string {
 	return (lamports / 1e9).toLocaleString('en', {
 		minimumFractionDigits: 2,
 		maximumFractionDigits: 2,
@@ -10,18 +13,15 @@ function printLamports(lamports: number): string {
 
 (async () => {
 	// create a keypair
-	const keypair: Keypair = Keypair.generate();
+	const keypair: web3.Keypair = web3.Keypair.generate();
 	console.log('Public Key: ', keypair.publicKey.toBase58());
 	console.log('Private Key:', base58.encode(keypair.secretKey));
-
-	// Connect to devnet cluster
-	const connection = new Connection(clusterApiUrl('devnet'), 'confirmed');
 
 	// request airdrop, sign with signers PK
 	console.log('requesting airdrop...');
 	let signature = await connection.requestAirdrop(
 		keypair.publicKey,
-		LAMPORTS_PER_SOL // 10000000 Lamports in 1 SOL
+		web3.LAMPORTS_PER_SOL // 10000000 Lamports in 1 SOL
 	);
 
 	await connection.confirmTransaction(signature).then(async () => {

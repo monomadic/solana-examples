@@ -1,8 +1,9 @@
 {
     "scripts": {
-        "1-1": "ts-node examples/1-basic/1-balance.ts",
-        "1-2": "ts-node examples/1-basic/2-airdrop.ts",
-        "4-1": "ts-node examples/4-metaplex/1-fetch-nft.ts"
+        "airdrop": "ts-node 1-basic/1-airdrop.ts",
+        "1-1": "ts-node 1-basic/1-airdrop.ts",
+        "1-2": "ts-node 1-basic/2-balance.ts",
+        "4-1": "ts-node 4-metaplex/1-fetch-nft.ts"
     },
     "devDependencies": {
         "@metaplex/js": "^3.1.0",
