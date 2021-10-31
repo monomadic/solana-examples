@@ -1,29 +1,30 @@
-import * as splToken from '@solana/spl-token';
+// import * as splToken from '@solana/spl-token';
+import * as metaplex from '@metaplex/js';
 import * as web3 from '@solana/web3.js';
 import base58 from 'bs58';
 
+import { fetchSPLTokens } from '../2-spl-tokens/1-list-tokens';
 import config from '../shared/config';
 
-const METADATA_ID = new web3.PublicKey('metaqbxxUerdq28cj1RbAWkYQm3ybzjb6a8bt518x1s');
-const connection = new web3.Connection(config.cluster, 'processed');
+async function main() {
+	const connection = new web3.Connection(config.cluster, 'processed');
+	const keypair = web3.Keypair.fromSecretKey(base58.decode(config.keypair));
 
-/**
- * Returns SPL Token accounts associated with a wallet account.
- * Metaplex NFTs are SPL Tokens, so we must request to fetch them first, and filter later. */
-async function fetchSPLTokens(connection: web3.Connection, pubKey: web3.PublicKey) {
-	return connection.getParsedProgramAccounts(splToken.TOKEN_PROGRAM_ID, {
-		commitment: connection.commitment,
-		filters: [
-			{ dataSize: 165 }, // compares the program account data length with the provided data size
-			{
-				memcmp: {
-					// filter memory comparison
-					offset: 32, // owner metadata is 32 bytes offset
-					bytes: pubKey.toBase58(),
-				},
-			},
-		],
-	});
+	// const metadataProgramId: string = metaplex.programs.metadata.MetadataProgram.PUBKEY;
+
+	const account: metaplex.Account<any> = await metaplex.Account.load(
+		connection,
+		keypair.publicKey
+	);
+
+	// Metaplex NFTs are SPL Tokens, so we must request to fetch them first, and filter later.
+	const tokens = await fetchSPLTokens(connection, keypair.publicKey);
+
+	const metadata = await Promise.all(tokens.map(mapMintAddress).map(fetchAccountData)).then(
+		(mints) => Promise.all(mints.filter(filterOnlyNFTs).map(fetchMetadataAccounts))
+	);
+
+	console.log(metadata);
 }
 
 /** Map only mint pubkey field (used to find associated metadata accounts) */
@@ -53,7 +54,7 @@ function filterOnlyNFTs(account: { decimals: number; supply: number }): boolean 
 /** Return all accounts owned by the metadata program, with a given mint address. */
 export async function fetchMetadataAccounts(account: { mint: web3.PublicKey }): Promise<any> {
 	return connection
-		.getParsedProgramAccounts(METADATA_ID, {
+		.getParsedProgramAccounts(metaplex.programs.metadata.Metadata, {
 			filters: [
 				{
 					memcmp: {
@@ -68,17 +69,6 @@ export async function fetchMetadataAccounts(account: { mint: web3.PublicKey }): 
 		.then((accounts) => {
 			return accounts[0];
 		});
-}
-
-async function main() {
-	const keypair = web3.Keypair.fromSecretKey(base58.decode(config.keypair));
-	const tokens = await fetchSPLTokens(connection, keypair.publicKey);
-
-	const metadata = await Promise.all(tokens.map(mapMintAddress).map(fetchAccountData)).then(
-		(mints) => Promise.all(mints.filter(filterOnlyNFTs).map(fetchMetadataAccounts))
-	);
-
-	console.log(metadata);
 }
 
 main()
