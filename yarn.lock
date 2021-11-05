@@ -42,13 +42,13 @@
     "@ethersproject/logger" "^5.5.0"
     hash.js "1.1.7"
 
-"@metaplex/js@^3.1.0":
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/@metaplex/js/-/js-3.1.0.tgz#e47a6eb2b0e4a2beb01f8f83d2ecf21c940530a0"
-  integrity sha512-WphjTNEw2EwgcbJY3+6rt3/iKcXKJabAesR3XW9qymc82AIqimlgxx45ES1JgLORxcU/f2fCbRiWiY1f56qGnw==
+"@metaplex/js@^3.2.0":
+  version "3.2.0"
+  resolved "https://registry.yarnpkg.com/@metaplex/js/-/js-3.2.0.tgz#dad3b41dc86896cb0217056588379edf03c9a2f8"
+  integrity sha512-kVVKkTQPoCpgxPaVu7EJsTbQLMYIgMIXX2k5zxIMtpH0bH/dX58Tzsx+inzuh7WtclTMN693hX2CYfKrbuiDYA==
   dependencies:
     "@solana/spl-token" "^0.1.8"
-    "@solana/web3.js" "^1.24.1"
+    "@solana/web3.js" "^1.30.2"
     "@types/bs58" "^4.0.1"
     axios "^0.21.4"
     bn.js "^5.2.0"
@@ -104,7 +104,7 @@
     superstruct "^0.14.2"
     tweetnacl "^1.0.0"
 
-"@solana/web3.js@^1.24.1", "@solana/web3.js@^1.30.2":
+"@solana/web3.js@^1.30.2":
   version "1.30.2"
   resolved "https://registry.yarnpkg.com/@solana/web3.js/-/web3.js-1.30.2.tgz#e85da75e0825dc64f53eb64a1ff0115b27bec135"
   integrity sha512-hznCj+rkfvM5taRP3Z+l5lumB7IQnDrB4l55Wpsg4kDU9Zds8pE5YOH5Z9bbF/pUzZJKQjyBjnY/6kScBm3Ugg==

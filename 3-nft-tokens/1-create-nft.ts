@@ -4,6 +4,45 @@ import base58 from 'bs58';
 
 import config from '../shared/config';
 
+async function createNFTMint(
+	connection,
+	payer,
+	mintAuthority,
+	freezeAuthority,
+	decimals,
+	programId
+) {
+	const mintAccount = web3.Keypair.generate();
+	const token = new splToken.Token(connection, mintAccount.publicKey, programId, payer); // Allocate memory for the account
+
+	const balanceNeeded = await splToken.Token.getMinBalanceRentForExemptMint(connection);
+	const transaction = new web3.Transaction();
+	transaction.add(
+		web3.SystemProgram.createAccount({
+			fromPubkey: payer.publicKey,
+			newAccountPubkey: mintAccount.publicKey,
+			lamports: balanceNeeded,
+			space: splToken.MintLayout.span,
+			programId,
+		})
+	);
+	transaction.add(
+		splToken.Token.createInitMintInstruction(
+			programId,
+			mintAccount.publicKey,
+			decimals,
+			mintAuthority,
+			freezeAuthority
+		)
+	); // Send the two instructions
+
+	await web3.sendAndConfirmTransaction(connection, transaction, [payer, mintAccount], {
+		skipPreflight: false,
+	});
+
+	return token;
+}
+
 async function main() {
 	const connection = new web3.Connection(config.cluster, 'processed');
 	const keypair = web3.Keypair.fromSecretKey(base58.decode(config.keypair));
@@ -12,10 +51,10 @@ async function main() {
 	const mint = await splToken.Token.createMint(
 		connection,
 		keypair,
-		keypair.publicKey,
-		null,
-		9,
-		splToken.TOKEN_PROGRAM_ID
+		keypair.publicKey, // mint authority
+		null, // freeze
+		0, // decimals
+		splToken.TOKEN_PROGRAM_ID // program id
 	);
 
 	console.log('Mint account created:', mint.publicKey.toBase58());
@@ -26,14 +65,16 @@ async function main() {
 
 	// Mint 1 new token to the associated token account, the creator account is the
 	// minting authority (creator).
-	await mint.mintTo(
-		tokenAccount.address, //who it goes to
-		keypair.publicKey, // minting authority
-		[], // multisig
-		web3.LAMPORTS_PER_SOL * 1 // how many
-	);
+	await mint
+		.mintTo(
+			tokenAccount.address, // destination
+			keypair.publicKey, // minting authority
+			[], // multisig
+			1 // how many
+		)
+		.then(() => console.log('minted to %s', tokenAccount.address));
 
-	// Set the minting authority (creator) on the mint as well.
+	// release minting authority
 	await mint.setAuthority(mint.publicKey, null, 'MintTokens', keypair.publicKey, []);
 
 	// Create an instruction array to transfer tokens from the creator into the destination account.
@@ -55,6 +96,8 @@ async function main() {
 		})
 		.then((signature) => {
 			console.log('txid: %s', signature);
+			console.log('tokenAccount: %s', tokenAccount.address.toBase58());
+			console.log('mint: %s', mint.publicKey.toBase58());
 		});
 }
 

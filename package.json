@@ -11,7 +11,7 @@
         "4-1": "ts-node 4-metaplex/1-fetch-nft.ts"
     },
     "devDependencies": {
-        "@metaplex/js": "^3.1.0",
+        "@metaplex/js": "^3.2.0",
         "@solana/spl-token": "^0.1.8",
         "@solana/spl-token-registry": "^0.2.286",
         "@solana/web3.js": "^1.30.2",
