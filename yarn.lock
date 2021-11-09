@@ -42,10 +42,10 @@
     "@ethersproject/logger" "^5.5.0"
     hash.js "1.1.7"
 
-"@metaplex/js@^3.2.0":
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/@metaplex/js/-/js-3.2.0.tgz#dad3b41dc86896cb0217056588379edf03c9a2f8"
-  integrity sha512-kVVKkTQPoCpgxPaVu7EJsTbQLMYIgMIXX2k5zxIMtpH0bH/dX58Tzsx+inzuh7WtclTMN693hX2CYfKrbuiDYA==
+"@metaplex/js@^4.0.0":
+  version "4.0.0"
+  resolved "https://registry.yarnpkg.com/@metaplex/js/-/js-4.0.0.tgz#2618d737e23f3d6b1e50e009b2603858b39fa6e5"
+  integrity sha512-s1WJabMt5OI22IiOWKpb/j1EcEaJsv8/Lb8rygaGjplD++bgsdpLu9isDgJsbV+Y6FKmCPru+igP3exGberp8Q==
   dependencies:
     "@solana/spl-token" "^0.1.8"
     "@solana/web3.js" "^1.30.2"
@@ -65,10 +65,10 @@
   dependencies:
     buffer "~6.0.3"
 
-"@solana/spl-token-registry@^0.2.286":
-  version "0.2.286"
-  resolved "https://registry.yarnpkg.com/@solana/spl-token-registry/-/spl-token-registry-0.2.286.tgz#53a9108c30582a6057f4bc80af2fbc57e8107557"
-  integrity sha512-zkn59e1Wm49o3dKAa2I4VHslG/BmA0GX3jZJA4bRU6Xci1EjLNu2McXRXxTCEzjod26MXFMq4bkBjOtjmQrnwg==
+"@solana/spl-token-registry@^0.2.287":
+  version "0.2.287"
+  resolved "https://registry.yarnpkg.com/@solana/spl-token-registry/-/spl-token-registry-0.2.287.tgz#c0d2ed68b7b2f805c7be897a617dc772dceef67b"
+  integrity sha512-ZAs2lhYhqRqqbVBwU+z4ggbA9ERwjx9kFZuz0o7CJHus+ZRlmpjh2mK/ym5t35GoIR4lvoj0+OilxnfD1Ho7Jg==
   dependencies:
     cross-fetch "3.0.6"
 
@@ -196,10 +196,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.20.25.tgz#882bea2ca0d2ec22126b92b4dd2dc24b35a07469"
   integrity sha512-hcTWqk7DR/HrN9Xe7AlJwuCaL13Vcd9/g/T54YrJz4Q3ESM5mr33YCzW2bOfzSIc3aZMeGBvbLGvgN6mIJ0I5Q==
 
-"@types/node@^16.11.6":
-  version "16.11.6"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.11.6.tgz#6bef7a2a0ad684cf6e90fcfe31cecabd9ce0a3ae"
-  integrity sha512-ua7PgUoeQFjmWPcoo9khiPum3Pd60k4/2ZGXt18sm2Slk0W0xZTqt5Y0Ny1NyBiN1EVQ/+FaF9NcY4Qe6rwk5w==
+"@types/node@^16.11.7":
+  version "16.11.7"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-16.11.7.tgz#36820945061326978c42a01e56b61cd223dfdc42"
+  integrity sha512-QB5D2sqfSjCmTuWcBWyJ+/44bcjO7VbjSbOE0ucoVbAsSNQc4Lt6QkgkVXkTDwkL4z/beecZNDvVX15D4P8Jbw==
 
 "@types/qs@*":
   version "6.9.7"
