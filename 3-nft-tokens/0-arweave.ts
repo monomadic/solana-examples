@@ -36,7 +36,37 @@ export async function uploadMetadata(data: string): Promise<string> {
 }
 
 async function main() {
-	uploadMetadata("'example json data'").then(console.log);
+	await uploadMetadata(`
+	{
+		"name": "Pico-8 Poom",
+		"symbol": "",
+		"description": "It's poom poom!",
+		"seller_fee_basis_points": 500,
+		"image": "https://www.arweave.net/43xtSbpMnBs9svYNT3gGajHD3NctDsTs_pRT9NQvHz4?ext=png",
+		"attributes": [
+			{
+				"trait_type": "",
+				"value": "fps"
+			}
+		],
+		"external_url": "",
+		"properties": {
+			"files": [
+				{
+					"uri": "https://www.arweave.net/43xtSbpMnBs9svYNT3gGajHD3NctDsTs_pRT9NQvHz4?ext=png",
+					"type": "image/png"
+				}
+			],
+			"category": "image",
+			"creators": [
+				{
+					"address": "Aokoq5QWYXUscom7mY2xbWRVbRQGWqECdsHdWQsUMJH8",
+					"share": 100
+				}
+			]
+		}
+	}
+	`).then(console.log);
 }
 
 main()
