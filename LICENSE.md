@@ -1,6 +1,7 @@
 # DON'T BE SHIT LICENSE
 
 > Version 0.1, December 2021
+> Originally created by DeathDisco / Monomadic
 
 Everyone is permitted to copy and distribute verbatim or modified
 copies of this license document. This license was derived from the
