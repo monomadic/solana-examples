@@ -15,12 +15,12 @@ our modern times.
 2. Being shit includes - but is not limited to - the following instances:
 
 - Tracking and storing personally identifying data about users.
-- Working for a bank or government.
+- Working for a bank, federal reserve or government.
 - Outright copyright infringement - Don't just copy this and change the name.
 - Selling the unmodified original with no work done what-so-ever.
-- Modifying the original work to contain hidden harmful content. That would make you a PROPER dick.
+- Modifying the original work to contain hidden harmful content, backdoors, ads or spyware.
 
-Obviously, point 1 clearly cuts out a few companies and people who are clearly shit. Here are some examples:
+Obviously, point 1 and 5 clearly cuts out a few companies and people who are clearly shit. Here are some examples:
 
 - Facebook and/or Mark Zuckerberg
 - Microsoft
